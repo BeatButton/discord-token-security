@@ -1,0 +1,6 @@
+token: "my_token"
+detectors:
+  - detectors.message
+  - detectors.attachment
+  - detectors.hastebin
+  - detectors.pastebin
