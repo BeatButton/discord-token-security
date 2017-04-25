@@ -1,6 +1,5 @@
 import re
 import hashlib
-import __main__
 
 import discord
 import aiohttp
@@ -14,7 +13,7 @@ session = aiohttp.ClientSession()
 
 
 class Detector:
-    def __init__(self, bot: __main__.Bot):
+    def __init__(self, bot):
         self.bot = bot
 
     async def check(self, m: discord.Message):
@@ -56,7 +55,7 @@ async def check_valid(tok: str):
     return data or False
 
 
-async def check_token(bot: __main__.Bot, content: str):
+async def check_token(bot, content: str):
     # Assert RegEx pattern
     match = check_length(content)
 

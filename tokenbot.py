@@ -89,7 +89,7 @@ class Bot(discord.Client):
             await self.send_message(m.channel, msg)
 
     async def on_message(self, m: discord.Message):
-        its = self.dets[:]
+        its = iter(self.dets.values())
         res = None
 
         # When a token is found, a Detector should return True
