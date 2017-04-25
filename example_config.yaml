@@ -4,3 +4,4 @@ detectors:
   - detectors.attachment
   - detectors.hastebin
   - detectors.pastebin
+  - detectors.github
