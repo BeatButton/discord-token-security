@@ -4,13 +4,14 @@ import discord
 
 import utils
 
+# Hastebin URL RegEx
+patt = re.compile(r"https?:\/\/(hastebin\.com"
+                  r"|paste\.safe\.moe)/([a-z]{10})")
+
 
 class HastebinDetector(utils.Detector):
-    # Hastebin URL RegEx
-    patt = re.compile(r"https?:\/\/(hastebin\.com"
-                      r"|paste\.safe\.moe)/([a-z]{10})")
     async def check(self, m: discord.Message):
-        match = self.patt.search(m.content)
+        match = patt.search(m.content)
 
         # ex:
         # match.groups() -> (hastebin, uxorezaqib)

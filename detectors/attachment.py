@@ -3,19 +3,20 @@ import discord
 import utils
 
 
+extensions = (
+    # Langs to check
+    "py", "js", "lua", "java", "c",
+    "txt", "cpp", "cs", "rb", "hs",
+
+    # Config formats
+    "ini", "cfg", "yaml", "json",
+
+    # Other files to check?
+    ...
+)
+
+
 class AttachmentDetector(utils.Detector):
-    extensions = (
-        # Langs to check
-        "py", "js", "lua", "java", "c",
-        "txt", "cpp", "cs", "rb", "hs",
-
-        # Config formats
-        "ini", "cfg", "yaml", "json",
-
-        # Other files to check?
-        ...
-    )
-
     async def check(self, m: discord.Message):
         for file in m.attachments:
             ext = file['filename'].split(".")[-1]

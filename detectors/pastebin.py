@@ -4,12 +4,13 @@ import discord
 
 import utils
 
+patt = re.compile(r"https?:\/\/pastebin\.com\/"
+                  r"([a-zA-Z0-9]+)")
+
 
 class PastebinDetector(utils.Detector):
-    patt = re.compile(r"https?:\/\/pastebin\.com\/"
-                      r"([a-zA-Z0-9]+)")
     async def check(self, m: discord.Message):
-        match = self.patt.search(m.content)
+        match = patt.search(m.content)
 
         if match is not None:
             # contains pastebin link, download contents
