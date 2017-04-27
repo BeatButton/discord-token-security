@@ -18,18 +18,9 @@ class PastebinDetector(utils.Detector):
             raw_link = "https://pastebin.com/raw/{}".format(match.group(1))
             paste_contents = await utils.get_url(raw_link)
 
-            # Check content
-            match, token = await utils.check_token(self.bot, paste_contents)
-
-            if match is False:
-                # No valid token
-                return
-
-            # Process reporting
-            await self.bot.process_token(m, match, token)
-
-            # If a token is found, return True
-            return True
+            p = await self.parse_content(m, paste_contents)
+            if p:
+                return True
 
 
 def setup(bot):

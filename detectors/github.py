@@ -79,18 +79,9 @@ class GithubDetector(utils.Detector):
             url = file_url.format(owner, repo, tree, f)
             content = await utils.get_url(url)
 
-            # Check content
-            match, token = await utils.check_token(self.bot, content)
-
-            if match is False:
-                # No valid token
-                continue
-
-            # Process reporting
-            await self.bot.process_token(m, match, token)
-
-            # If a token is found, return True
-            return True
+            p = await self.parse_content(m, content)
+            if p:
+                return True
 
 
 def setup(bot):

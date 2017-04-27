@@ -22,18 +22,9 @@ class HastebinDetector(utils.Detector):
             raw_link = "https://{}/raw/{}".format(*match.groups())
             bin_contents = await utils.get_url(raw_link)
 
-            # Check content
-            match, token = await utils.check_token(self.bot, bin_contents)
-
-            if match is False:
-                # No valid token
-                return
-
-            # Process reporting
-            await self.bot.process_token(m, match, token)
-
-            # If a token is found, return True
-            return True
+            p = await self.parse_content(m, bin_contents)
+            if p:
+                return True
 
 
 def setup(bot):

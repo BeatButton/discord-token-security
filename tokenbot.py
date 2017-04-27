@@ -1,3 +1,4 @@
+import asyncio
 import importlib
 import logging
 import hashlib
@@ -89,6 +90,9 @@ class Bot(discord.Client):
             await self.send_message(m.channel, msg)
 
     async def on_message(self, m: discord.Message):
+        asyncio.ensure_future(self.process_message(m))
+
+    async def process_message(self, m: discord.Message):
         its = iter(self.dets.values())
         res = None
 

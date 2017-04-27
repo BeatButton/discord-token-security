@@ -22,6 +22,20 @@ class Detector:
         # To report to the user, call `self.bot.process_token`
         pass
 
+    async def parse_string(self, m: discord.Message, content: str):
+        # Call this with a Message and the str to check.
+        # If this returns True, a token was reported.
+        match, token = await check_token(self.bot, content)
+
+        if match is False:
+            # No valid token
+            return False
+
+        # Process reporting
+        await self.bot.process_token(m, match, token)
+
+        # If a token is found, return True
+        return True
 
 async def get_url(url: str, headers: dict=None, method: str="text"):
     # Shorthand function to get data from an URL
