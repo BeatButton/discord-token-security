@@ -4,29 +4,29 @@ import discord
 
 import utils
 
-patt = re.compile(r"https?:\/\/github.com\/([a-zA-Z0-9_\-]+)\/"
-                  r"([a-zA-Z0-9_\-]+)(\/tree\/[a-zA-Z0-9_\-]+)?")
-
-extensions = [
-    # Langs to check
-    "py", "js", "lua", "java", "c",
-    "txt", "cpp", "cs", "rb", "hs",
-]
-
-configs = [
-    # Config formats
-    "ini", "cfg", "yaml", "json",
-]
-
-check_names = [
-    "config", "bot", "run",
-]
-
-base_url = "https://api.github.com/repos/{}/{}/git/trees/{}?recursive=1"
-file_url = "https://raw.githubusercontent.com/{}/{}/{}/{}"
-
 
 class GithubDetector(utils.Detector):
+    patt = re.compile(r"https?:\/\/github.com\/([a-zA-Z0-9_\-]+)\/"
+                      r"([a-zA-Z0-9_\-]+)(\/tree\/[a-zA-Z0-9_\-]+)?")
+
+    extensions = (
+        # Langs to check
+        "py", "js", "lua", "java", "c",
+        "txt", "cpp", "cs", "rb", "hs",
+    )
+
+    configs = (
+        # Config formats
+        "ini", "cfg", "yaml", "json",
+    )
+
+    check_names = (
+        "config", "bot", "run",
+    )
+
+    base_url = "https://api.github.com/repos/{}/{}/git/trees/{}?recursive=1"
+    file_url = "https://raw.githubusercontent.com/{}/{}/{}/{}"
+
     def get_files(self, data: dict):
         files = []
         for file in data["tree"]:
@@ -35,23 +35,24 @@ class GithubDetector(utils.Detector):
                 continue
 
             # Get the file and extension
-            file = file['path']
-            ext = file.split(".")[-1]
+            file = file["path"]
+            ext = file.rpartition(".")[-1]
 
-            if ext in extensions:
+            if ext in self.extensions:
                 # Check if it has a filename we're looking for
-                if any(name in file.split("/")[-1] for name in check_names):
+                filename = file.rpartition("/")[-1]
+                if any(name in filename for name in self.check_names):
                     # Mark this file to be checked
                     files.append(file)
 
-            elif ext in configs:
+            elif ext in self.configs:
                 # Mark this file to be checked
                 files.append(file)
         return files
 
     async def check(self, m: discord.Message):
         # Try to find a github link
-        match = patt.search(m.content)
+        match = self.patt.search(m.content)
         if not match:
             return
 
@@ -60,12 +61,10 @@ class GithubDetector(utils.Detector):
         repo = match.group(2)
         tree = match.group(3) or "master"
 
-        # /tree/BRANCH -> BRANCH
-        if tree.startswith("/"):
-            tree = tree[6:]
+        tree = tree.lstrip("/tree/")
 
         # Get repo structure
-        api_url = base_url.format(owner, repo, tree)
+        api_url = self.base_url.format(owner, repo, tree)
         data = await utils.get_url(api_url, method="json")
 
         # Get files to check
@@ -74,9 +73,9 @@ class GithubDetector(utils.Detector):
             # No files to check
             return
 
-        for f in files:
+        for file in files:
             # Get file contents
-            url = file_url.format(owner, repo, tree, f)
+            url = self.file_url.format(owner, repo, tree, file)
             content = await utils.get_url(url)
 
             p = await self.parse_content(m, content)
